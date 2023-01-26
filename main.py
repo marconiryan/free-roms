@@ -1,5 +1,9 @@
-from requests_html import *
+import threading
+import tqdm
 
+
+from requests_html import *
+import sys
 
 class bcolors:
     HEADER = '\033[95m'
@@ -30,28 +34,31 @@ class HtmlContent:
 
 def save_rom(link: dict, queue: list, saved: list):
     try:
-        title_rom = iter(link)
-        title_rom = next(title_rom)
-        try:
+        title_rom_i = iter(link)
+        title_rom = next(title_rom_i)
+        while len(links) > 0:
+            try:
+                if title_rom not in queue and title_rom not in saved:
 
-            print(f"{bcolors.WARNING}(In queue) {len(queue)} {bcolors.ENDC}{bcolors.BOLD}{title_rom}")
-            if title_rom not in queue and title_rom not in saved and len(queue) < 2:
-                queue.append(title_rom)
-                response = requests.get(URL + link[title_rom])
-                with open("./roms/" + title_rom, "wb") as write_rom:
-                    write_rom.write(response.content)
-                    write_rom.flush()
-                    print("aaaaaa")
+                    queue.append(title_rom)
+                    response = requests.get(URL + link[title_rom])
+                    with open("./roms/" + title_rom, "wb") as write_rom:
+                        write_rom.write(response.content)
+                        saved.append(title_rom)
+                        print(' ' * 110, end='\r')
+                        print(f"{bcolors.OKCYAN}Completed: {int(len(saved)/len(link))}% {bcolors.OKGREEN}({len(saved)} Saved){bcolors.ENDC} {bcolors.BOLD}{title_rom}", end="\r")
+                        write_rom.flush()
+                        queue.remove(title_rom)
+                else:
+                    title_rom = next(title_rom_i)
 
-                print(f"{bcolors.OKGREEN}(Saved){bcolors.ENDC} {bcolors.BOLD}{title_rom}")
-                queue.remove(title_rom)
-                saved.append(title_rom)
-                link.pop(title_rom)
-
-        except:
-            print(f"{bcolors.FAIL}(Saved){bcolors.ENDC} {bcolors.BOLD}{title_rom}")
+            except:
+                print(f"{bcolors.FAIL}(Faild){bcolors.ENDC} {bcolors.BOLD}{title_rom}")
+                return
     except:
         return
+
+
 
 
 queue_rom = []
@@ -60,7 +67,7 @@ saved_rom = []
 URL = "https://archive.org/download/nointro.snes/"
 html_content = HtmlContent(URL)
 
-links: dict = {}
+links = {}
 
 for i in html_content.request_html_response.html.find("a"):
     title = i.full_text
@@ -68,8 +75,28 @@ for i in html_content.request_html_response.html.find("a"):
         for j in i.links:
             links[title] = j
             break
-print(f"{bcolors.OKCYAN}(Links saved)")
+print(f"{bcolors.WARNING}({len(links)} Links found)")
+
+
 if __name__ == "__main__":
     link = iter(links)
-    while len(links) > 0:
-        save_rom(links,queue_rom, saved_rom)
+    t1 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t1.start()
+    t2 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t2.start()
+    t3 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t3.start()
+    t4 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t4.start()
+    t5 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t5.start()
+    t6 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t6.start()
+    t7 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t7.start()
+    t8 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t8.start()
+    t9 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t9.start()
+    t10 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t10.start()
