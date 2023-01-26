@@ -1,9 +1,7 @@
 import threading
-import tqdm
-
-
+import os
 from requests_html import *
-import sys
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -32,7 +30,7 @@ class HtmlContent:
         return self.request_html_response.html.links
 
 
-def save_rom(link: dict, queue: list, saved: list):
+def save_rom(link: dict, queue: list, saved: list, qntd: int):
     try:
         title_rom_i = iter(link)
         title_rom = next(title_rom_i)
@@ -46,7 +44,9 @@ def save_rom(link: dict, queue: list, saved: list):
                         write_rom.write(response.content)
                         saved.append(title_rom)
                         print(' ' * 110, end='\r')
-                        print(f"{bcolors.OKCYAN}Completed: {int(len(saved)/len(link))}% {bcolors.OKGREEN}({len(saved)} Saved){bcolors.ENDC} {bcolors.BOLD}{title_rom}", end="\r")
+                        print(
+                            f"{bcolors.OKCYAN}Completed: {round((len(saved) / qntd) * 100,2)}% {bcolors.OKGREEN}({len(saved)} Saved){bcolors.ENDC} {bcolors.BOLD}{title_rom}",
+                            end="\r")
                         write_rom.flush()
                         queue.remove(title_rom)
                 else:
@@ -59,44 +59,40 @@ def save_rom(link: dict, queue: list, saved: list):
         return
 
 
-
-
-queue_rom = []
-saved_rom = []
-
-URL = "https://archive.org/download/nointro.snes/"
-html_content = HtmlContent(URL)
-
-links = {}
-
-for i in html_content.request_html_response.html.find("a"):
-    title = i.full_text
-    if ".zip" in title or ".7z" in title:
-        for j in i.links:
-            links[title] = j
-            break
-print(f"{bcolors.WARNING}({len(links)} Links found)")
-
-
 if __name__ == "__main__":
-    link = iter(links)
-    t1 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    os.system("clear")
+    queue_rom = []
+    saved_rom = []
+    links = {}
+    URL = "https://archive.org/download/nointro.snes/"
+    html_content = HtmlContent(URL)
+
+    for i in html_content.request_html_response.html.find("a"):
+        title = i.full_text
+        if ".zip" in title or ".7z" in title:
+            for j in i.links:
+                links[title] = j
+                break
+
+    qntd_links = len(links)
+    print(f"{bcolors.WARNING}{qntd_links} Roms found")
+    t1 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t1.start()
-    t2 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t2 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t2.start()
-    t3 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t3 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t3.start()
-    t4 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t4 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t4.start()
-    t5 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t5 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t5.start()
-    t6 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t6 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t6.start()
-    t7 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t7 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t7.start()
-    t8 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t8 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t8.start()
-    t9 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t9 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t9.start()
-    t10 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom))
+    t10 = threading.Thread(target=save_rom, args=(links, queue_rom, saved_rom, qntd_links))
     t10.start()
